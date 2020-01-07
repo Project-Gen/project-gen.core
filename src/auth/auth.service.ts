@@ -6,10 +6,6 @@ import { UsersService } from '../users/users.service'
 export class AuthService {
   constructor(private readonly usersService: UsersService, private readonly jwtService: JwtService) {}
 
-  async register(data) {
-    return this.usersService.create(data)
-  }
-
   async createToken(id: number) {
     return this.jwtService.signAsync({ id })
   }
