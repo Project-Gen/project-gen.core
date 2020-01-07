@@ -1,0 +1,1 @@
+export const NEST_CONFIG_SERVICE = 'NEST_CONFIG'
