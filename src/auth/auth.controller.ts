@@ -1,8 +1,11 @@
+import { Request } from 'express'
 import {
- Controller, Post, Body, BadRequestException,
+ Controller, Post, Req, Body, UseGuards, Get,
 } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
 import { AuthService } from './auth.service'
 import { UsersService } from '../users/users.service'
+import { User } from '../users/user.entity'
 
 @Controller('auth')
 export class AuthController {
@@ -21,22 +24,20 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() body) {
-    const user = await this.userService.findOne({ email: body.email })
-
-    if (!user) {
-      throw new BadRequestException({ email: 'Email not found' })
-    }
-    if (!await this.userService.comparePasswords(body.password, user.passwordHash)) {
-      throw new BadRequestException({ password: 'Incorrect password' })
-    }
-
-    const token = await this.authService.createToken(user.id)
+  @UseGuards(AuthGuard('local'))
+  async login(@Req() req: Request) {
+    const token = await this.authService.createToken((req.user as User).id)
     return {
       data: {
-        user,
+        user: req.user,
         token,
       },
     }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('user')
+  getProfile(@Req() req: Request) {
+    return req.user
   }
 }

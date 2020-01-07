@@ -5,9 +5,13 @@ import { ConfigModule } from '../config/config.module'
 import { ConfigService } from '../config/config.service'
 import { AuthController } from './auth.controller'
 import { UsersModule } from '../users/users.module'
+import { LocalStrategy } from './local.strategy'
+import { JwtStrategy } from './jwt.strategy'
 
 @Module({
   imports: [
+    ConfigModule,
+    UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -15,9 +19,8 @@ import { UsersModule } from '../users/users.module'
       }),
       inject: [ConfigService],
     }),
-    UsersModule,
   ],
-  providers: [AuthService],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
