@@ -7,7 +7,7 @@ import { NEST_CONFIG_SERVICE } from './config.constants'
 export class ConfigService {
   constructor(@Inject(NEST_CONFIG_SERVICE) readonly nestConfigService: NestConfigService) {}
 
-  get(key?: keyof ReturnType<typeof getConfig>) {
+  get(key: keyof ReturnType<typeof getConfig>) {
     return this.nestConfigService.get(key)
   }
 }
