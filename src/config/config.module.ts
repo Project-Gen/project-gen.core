@@ -15,5 +15,6 @@ import { NEST_CONFIG_SERVICE } from './config.constants'
     },
     ConfigService,
   ],
+  exports: [ConfigService],
 })
 export class ConfigModule { }
