@@ -137,7 +137,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "slint-staged"
+      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
