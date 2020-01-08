@@ -7,4 +7,4 @@ import { AuthModule } from './auth/auth.module'
 @Module({
   imports: [ConfigModule, DatabaseModule, UsersModule, AuthModule],
 })
-export class AppModule { }
+export class AppModule {}

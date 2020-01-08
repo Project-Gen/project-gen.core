@@ -1,6 +1,6 @@
 {
-  "name": "hero",
-  "version": "0.0.1",
+  "name": "nestjs.starter",
+  "version": "1.0.0",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -54,7 +54,9 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb-typescript": "^6.3.1",
     "eslint-plugin-import": "^2.19.1",
+    "husky": "^4.0.1",
     "jest": "^24.9.0",
+    "lint-staged": "^9.5.0",
     "prettier": "^1.18.2",
     "supertest": "^4.0.2",
     "ts-jest": "^24.1.0",
@@ -107,6 +109,7 @@
         2,
         "never"
       ],
+      "object-curly-newline": 0,
       "no-console": 0,
       "import/prefer-default-export": 0,
       "max-classes-pre-file": 0,
@@ -125,5 +128,23 @@
         }
       ]
     }
+  },
+  "prettier": {
+    "printWidth": 150,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "slint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
   }
 }

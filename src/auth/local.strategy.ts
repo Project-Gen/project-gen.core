@@ -8,7 +8,7 @@ import { User } from '../users/user.entity'
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly usersService: UsersService) {
     super({
-      usernameField: 'email'
+      usernameField: 'email',
     })
   }
 
@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new BadRequestException({ email: 'Email not found' })
     }
-    if (!await this.usersService.comparePasswords(password, user.passwordHash)) {
+    if (!(await this.usersService.comparePasswords(password, user.passwordHash))) {
       throw new BadRequestException({ password: 'Incorrect password' })
     }
 

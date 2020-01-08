@@ -5,9 +5,11 @@ import { ConfigService } from './config.service'
 import { NEST_CONFIG_SERVICE } from './config.constants'
 
 @Module({
-  imports: [NestConfigModule.forRoot({
-    load: [getConfig],
-  })],
+  imports: [
+    NestConfigModule.forRoot({
+      load: [getConfig],
+    }),
+  ],
   providers: [
     {
       provide: NEST_CONFIG_SERVICE,
@@ -17,4 +19,4 @@ import { NEST_CONFIG_SERVICE } from './config.constants'
   ],
   exports: [ConfigService],
 })
-export class ConfigModule { }
+export class ConfigModule {}
