@@ -1,12 +1,12 @@
 import { Strategy } from 'passport-local'
 import { PassportStrategy } from '@nestjs/passport'
 import { Injectable, BadRequestException } from '@nestjs/common'
-import { UsersService } from '../users/users.service'
+import { UsersStorage } from '../users/users.storage'
 import { User } from '../users/user.entity'
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly usersService: UsersService) {
+  constructor(private readonly usersService: UsersStorage) {
     super({
       usernameField: 'email',
     })
