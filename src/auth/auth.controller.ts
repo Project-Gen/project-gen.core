@@ -2,12 +2,12 @@ import { Request } from 'express'
 import { Controller, Post, Req, Body, UseGuards, Get } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { AuthService } from './auth.service'
-import { UsersStorage } from '../users/users.storage'
+import { UsersService } from '../users/users.service'
 import { User } from '../users/user.entity'
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly userService: UsersStorage) {}
+  constructor(private readonly authService: AuthService, private readonly userService: UsersService) {}
 
   @Post('register')
   async register(@Body() body) {
