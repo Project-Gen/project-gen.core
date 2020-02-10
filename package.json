@@ -14,11 +14,12 @@
     "start:prod": "node dist/main",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test": "jest -i",
+    "test:watch": "jest --watch -i",
+    "test:cov": "jest --coverage -i",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest -i",
+    "test:e2e": "jest --config -i ./test/jest-e2e.json",
+    "test:e2e:watch": "jest --watchAll -i --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^6.7.2",
@@ -108,6 +109,10 @@
       "semi": [
         2,
         "never"
+      ],
+      "implicit-arrow-linebreak": [
+        "error",
+        "beside"
       ],
       "object-curly-newline": 0,
       "no-console": 0,

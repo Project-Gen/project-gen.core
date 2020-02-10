@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import { Controller, Post, Req, Body, UseGuards, Get } from '@nestjs/common'
+import { Controller, Post, Req, Body, UseGuards, Get, HttpCode } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { AuthService } from './auth.service'
 import { UsersService } from '../users/users.service'
@@ -23,6 +23,7 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(AuthGuard('local'))
+  @HttpCode(200)
   async login(@Req() req: Request) {
     const token = await this.authService.createToken((req.user as User).id)
     return {
@@ -33,9 +34,12 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('user')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(200)
   getProfile(@Req() req: Request) {
-    return req.user
+    return {
+      data: req.user,
+    }
   }
 }
