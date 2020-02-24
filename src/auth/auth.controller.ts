@@ -11,8 +11,9 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body) {
-    const user = await this.userService.create(body)
+    const user = await this.userService.createAdmin(body)
     const token = await this.authService.createToken(user.id)
+
     return {
       data: {
         user,
@@ -26,6 +27,7 @@ export class AuthController {
   @HttpCode(200)
   async login(@Req() req: Request) {
     const token = await this.authService.createToken((req.user as User).id)
+
     return {
       data: {
         user: req.user,

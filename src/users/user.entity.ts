@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import { Project } from '../projects/project.entity'
+
+export enum Role {
+  User = 'user',
+  Admin = 'admin',
+}
 
 @Entity()
 export class User {
@@ -10,4 +16,13 @@ export class User {
 
   @Column()
   passwordHash: string
+
+  @Column()
+  role: Role
+
+  @OneToMany(
+    () => Project,
+    project => project.user
+  )
+  projects: Project[]
 }

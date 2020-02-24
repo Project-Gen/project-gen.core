@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
-import * as request from 'supertest'
+import { Test, TestingModule } from '@nestjs/testing'
 import { getConnection } from 'typeorm'
-import { AuthModule } from '../src/auth/auth.module'
-import { AppModule } from '../src/app.module'
-import { UsersService } from '../src/users/users.service'
+import { AppModule } from '../src/app/app.module'
 import { AuthService } from '../src/auth/auth.service'
+import { Role } from '../src/users/user.entity'
+import { UsersService } from '../src/users/users.service'
+import { request, expectUnauhorized } from './lib'
 
-const AUTH_URL = '/auth'
+const API_URL = '/auth'
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication
@@ -17,12 +17,13 @@ describe('AuthController (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, AuthModule],
+      imports: [AppModule],
     }).compile()
 
     app = moduleFixture.createNestApplication()
-    usersService = moduleFixture.get<UsersService>(UsersService)
-    authService = moduleFixture.get<AuthService>(AuthService)
+
+    usersService = moduleFixture.get(UsersService)
+    authService = moduleFixture.get(AuthService)
 
     await app.init()
 
@@ -35,12 +36,15 @@ describe('AuthController (e2e)', () => {
     await connection.close()
   })
 
-  describe(`/${AUTH_URL}/register (POST)`, () => {
+  describe(`${API_URL}/register (POST)`, () => {
     test('success register user', async () => {
       const userData = { email: 'user@email.com', password: 'userpassword' }
-      const res = await request(app.getHttpServer())
-        .post(`${AUTH_URL}/register`)
-        .send(userData)
+      const res = await request(app.getHttpServer(), {
+        method: 'post',
+        path: `${API_URL}/register`,
+        data: userData,
+      })
+
       expect(res.status).toBe(201)
       expect(res.body).toEqual({
         data: {
@@ -48,6 +52,7 @@ describe('AuthController (e2e)', () => {
             id: expect.any(Number),
             email: userData.email,
             passwordHash: expect.any(String),
+            role: Role.User,
           },
           token: expect.any(String),
         },
@@ -56,13 +61,17 @@ describe('AuthController (e2e)', () => {
     test.todo('user already exist')
   })
 
-  describe(`/${AUTH_URL}/login (POST)`, () => {
+  describe(`${API_URL}/login (POST)`, () => {
     test('success login user', async () => {
       const userData = { email: 'user@email.com', password: 'userpassword' }
-      await usersService.create(userData)
-      const res = await request(app.getHttpServer())
-        .post(`${AUTH_URL}/login`)
-        .send(userData)
+      await usersService.createUser(userData)
+
+      const res = await request(app.getHttpServer(), {
+        method: 'post',
+        path: `${API_URL}/login`,
+        data: userData,
+      })
+
       expect(res.status).toBe(200)
       expect(res.body).toEqual({
         data: {
@@ -70,6 +79,7 @@ describe('AuthController (e2e)', () => {
             id: expect.any(Number),
             email: userData.email,
             passwordHash: expect.any(String),
+            role: Role.User,
           },
           token: expect.any(String),
         },
@@ -80,14 +90,26 @@ describe('AuthController (e2e)', () => {
     test.todo('incorrect password')
   })
 
-  describe(`/${AUTH_URL}/user (GET)`, () => {
+  describe(`${API_URL}/user (GET)`, () => {
+    test('return unauhorized error', async () => {
+      const res = await request(app.getHttpServer(), {
+        method: 'get',
+        path: `${API_URL}/user`,
+      })
+
+      expectUnauhorized({ status: res.status, body: res.body })
+    })
+
     test('return authenticated user', async () => {
       const userData = { email: 'user@email.com', password: 'userpassword' }
-      const user = await usersService.create(userData)
+      const user = await usersService.createUser(userData)
+
       const token = await authService.createToken(user.id)
-      const res = await request(app.getHttpServer())
-        .get(`${AUTH_URL}/user`)
-        .set({ Authorization: `Bearer ${token}` })
+      const res = await request(app.getHttpServer(), {
+        method: 'get',
+        path: `${API_URL}/user`,
+        token,
+      })
 
       expect(res.status).toBe(200)
       expect(res.body).toEqual({
@@ -95,6 +117,7 @@ describe('AuthController (e2e)', () => {
           id: expect.any(Number),
           email: userData.email,
           passwordHash: expect.any(String),
+          role: Role.User,
         },
       })
     })
