@@ -6,6 +6,7 @@ import { AuthService } from '../src/auth/auth.service'
 import { Role } from '../src/users/user.entity'
 import { UsersService } from '../src/users/users.service'
 import { request, expectUnauhorized } from './lib'
+import { createUserData, usersMocks } from './mocks'
 
 const API_URL = '/auth'
 
@@ -37,12 +38,11 @@ describe('AuthController (e2e)', () => {
   })
 
   describe(`${API_URL}/register (POST)`, () => {
-    test('success register user', async () => {
-      const userData = { email: 'user@email.com', password: 'userpassword' }
+    test('register user', async () => {
       const res = await request(app.getHttpServer(), {
         method: 'post',
         path: `${API_URL}/register`,
-        data: userData,
+        data: usersMocks[0],
       })
 
       expect(res.status).toBe(201)
@@ -50,7 +50,7 @@ describe('AuthController (e2e)', () => {
         data: {
           user: {
             id: expect.any(Number),
-            email: userData.email,
+            email: usersMocks[0].email,
             passwordHash: expect.any(String),
             role: Role.User,
           },
@@ -62,24 +62,23 @@ describe('AuthController (e2e)', () => {
   })
 
   describe(`${API_URL}/login (POST)`, () => {
-    test('success login user', async () => {
-      const userData = { email: 'user@email.com', password: 'userpassword' }
-      await usersService.createUser(userData)
+    test('login user', async () => {
+      const user = await usersService.createUser(usersMocks[0])
 
       const res = await request(app.getHttpServer(), {
         method: 'post',
         path: `${API_URL}/login`,
-        data: userData,
+        data: usersMocks[0],
       })
 
       expect(res.status).toBe(200)
       expect(res.body).toEqual({
         data: {
           user: {
-            id: expect.any(Number),
-            email: userData.email,
+            id: user.id,
+            email: user.email,
             passwordHash: expect.any(String),
-            role: Role.User,
+            role: user.role,
           },
           token: expect.any(String),
         },
@@ -101,9 +100,7 @@ describe('AuthController (e2e)', () => {
     })
 
     test('return authenticated user', async () => {
-      const userData = { email: 'user@email.com', password: 'userpassword' }
-      const user = await usersService.createUser(userData)
-
+      const user = await usersService.createUser(usersMocks[0])
       const token = await authService.createToken(user.id)
       const res = await request(app.getHttpServer(), {
         method: 'get',
@@ -114,10 +111,10 @@ describe('AuthController (e2e)', () => {
       expect(res.status).toBe(200)
       expect(res.body).toEqual({
         data: {
-          id: expect.any(Number),
-          email: userData.email,
+          id: user.id,
+          email: user.email,
           passwordHash: expect.any(String),
-          role: Role.User,
+          role: user.role,
         },
       })
     })

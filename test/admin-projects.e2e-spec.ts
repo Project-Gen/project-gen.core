@@ -4,18 +4,22 @@ import { getConnection } from 'typeorm'
 import { AppModule } from '../src/app/app.module'
 import { AuthService } from '../src/auth/auth.service'
 import { ProjectsService } from '../src/projects/projects.service'
+import { User } from '../src/users/user.entity'
 import { UsersService } from '../src/users/users.service'
 import { expectForbidden, request } from './lib'
-import { createProjectData, projectsMocks, usersMocks } from './mocks'
+import { authUsersMocks, createProjectData, projectsMocks } from './mocks'
 
 const API_URL = '/admin/projects'
 
-describe('ProjectsController (e2e)', () => {
+describe('AdminProjectsController (e2e)', () => {
   let app: INestApplication
 
   let authService: AuthService
   let usersService: UsersService
   let projectsService: ProjectsService
+
+  let authUser: User
+  let authAdmin: User
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -32,6 +36,9 @@ describe('ProjectsController (e2e)', () => {
 
     const connection = getConnection()
     await connection.synchronize(true)
+
+    authUser = await usersService.createUser(authUsersMocks[1])
+    authAdmin = await usersService.createAdmin(authUsersMocks[0])
   })
 
   afterEach(async () => {
@@ -42,17 +49,8 @@ describe('ProjectsController (e2e)', () => {
 
   describe(`${API_URL} (POST)`, () => {
     test('create project', async () => {
-      const projectData = {
-        title: 'test',
-        description: 'test',
-        userId: 1,
-      }
-      const userData = {
-        email: 'test@email.com',
-        password: 'testpassword',
-      }
-      const user = await usersService.createAdmin(userData)
-      const token = await authService.createToken(user.id)
+      const projectData = createProjectData(projectsMocks[0], { userId: authUser.id })
+      const token = await authService.createToken(authAdmin.id)
 
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}`,
@@ -67,29 +65,18 @@ describe('ProjectsController (e2e)', () => {
           id: expect.any(Number),
           title: projectData.title,
           description: projectData.description,
-          userId: 1,
+          userId: projectData.userId,
+          user: authUser,
         },
       })
     })
 
     test('forbidden by user role', async () => {
-      const projectData = {
-        title: 'test',
-        description: 'test',
-        userId: 1,
-      }
-      const userData = {
-        email: 'test@email.com',
-        password: 'testpassword',
-      }
-      const user = await usersService.createUser(userData)
-      const token = await authService.createToken(user.id)
-
+      const token = await authService.createToken(authUser.id)
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}`,
         method: 'post',
         token,
-        data: projectData,
       })
 
       expectForbidden({ status: res.status, body: res.body })
@@ -97,19 +84,9 @@ describe('ProjectsController (e2e)', () => {
   })
 
   describe(`${API_URL}/:id (GET)`, () => {
-    test('get project', async () => {
-      const projectData = {
-        title: 'test',
-        description: 'test',
-        userId: 1,
-      }
-      const userData = {
-        email: 'test@email.com',
-        password: 'testpassword',
-      }
-      const user = await usersService.createAdmin(userData)
-      const project = await projectsService.create({ ...projectData, userId: user.id })
-      const token = await authService.createToken(user.id)
+    test('return project', async () => {
+      const project = await projectsService.create({ ...projectsMocks[0], userId: authUser.id })
+      const token = await authService.createToken(authAdmin.id)
 
       const res = await request(app.getHttpServer(), {
         method: 'get',
@@ -121,33 +98,20 @@ describe('ProjectsController (e2e)', () => {
       expect(res.body).toEqual({
         data: {
           id: expect.any(Number),
-          title: projectData.title,
-          description: projectData.description,
-          userId: 1,
+          title: projectsMocks[0].title,
+          description: projectsMocks[0].description,
+          userId: authUser.id,
+          user: authUser,
         },
       })
     })
 
     test('forbidden for user role', async () => {
-      const userData = {
-        email: 'test@email.com',
-        password: 'testpassword',
-      }
-      const user = await usersService.createUser(userData)
-      const token = await authService.createToken(user.id)
-
-      const projectData = {
-        title: 'test',
-        description: 'test',
-        userId: user.id,
-      }
-      const project = await projectsService.create(projectData)
-
+      const token = await authService.createToken(authUser.id)
       const res = await request(app.getHttpServer(), {
-        path: `${API_URL}/${project.id}`,
+        path: `${API_URL}/34`,
         method: 'get',
         token,
-        data: projectData,
       })
 
       expectForbidden({ status: res.status, body: res.body })
@@ -156,17 +120,15 @@ describe('ProjectsController (e2e)', () => {
 
   describe(`${API_URL}/:id (PUT)`, () => {
     test('update project', async () => {
-      const user = await usersService.createAdmin(usersMocks[0])
-      const project = await projectsService.create(
-        createProjectData(projectsMocks[0], {
-          userId: user.id,
-        }),
-      )
+      const project = await projectsService.create({
+        ...projectsMocks[0],
+        userId: authUser.id,
+      })
       const newProjectData = createProjectData(projectsMocks[1], { userId: project.userId })
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}/${project.id}`,
         method: 'put',
-        token: await authService.createToken(user.id),
+        token: await authService.createToken(authAdmin.id),
         data: newProjectData,
       })
       expect(res.status).toBe(200)
@@ -174,16 +136,16 @@ describe('ProjectsController (e2e)', () => {
         data: {
           id: project.id,
           ...newProjectData,
+          user: authUser,
         },
       })
     })
 
     test('forbidden by user role', async () => {
-      const user = await usersService.createUser(usersMocks[0])
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}/44`,
         method: 'put',
-        token: await authService.createToken(user.id),
+        token: await authService.createToken(authUser.id),
       })
 
       expectForbidden({ status: res.status, body: res.body })
@@ -192,24 +154,22 @@ describe('ProjectsController (e2e)', () => {
 
   describe(`${API_URL}/:id (DELETE)`, () => {
     test('forbidden for user role', async () => {
-      const user = await usersService.createUser(usersMocks[0])
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}/44`,
         method: 'delete',
-        token: await authService.createToken(user.id),
+        token: await authService.createToken(authUser.id),
       })
 
       expectForbidden({ status: res.status, body: res.body })
     })
 
-    test('delete by id', async () => {
-      const user = await usersService.createAdmin(usersMocks[0])
-      const project = await projectsService.create(createProjectData(projectsMocks[0], { userId: user.id }))
+    test('delete project', async () => {
+      const project = await projectsService.create(createProjectData(projectsMocks[0], { userId: authUser.id }))
 
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}/${project.id}`,
         method: 'delete',
-        token: await authService.createToken(user.id),
+        token: await authService.createToken(authAdmin.id),
       })
 
       expect(res.status).toBe(200)
@@ -219,25 +179,22 @@ describe('ProjectsController (e2e)', () => {
 
   describe(`${API_URL} (GET)`, () => {
     test('forbidden for user role', async () => {
-      const user = await usersService.createUser(usersMocks[0])
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}`,
         method: 'get',
-        token: await authService.createToken(user.id),
+        token: await authService.createToken(authUser.id),
       })
 
       expectForbidden({ status: res.status, body: res.body })
     })
 
-    test('get all projects', async () => {
-      const user = await usersService.createAdmin(usersMocks[0])
-
-      await Promise.all(projectsMocks.map((projectMock) => projectsService.create(createProjectData(projectMock, { userId: user.id }))))
+    test('return projects', async () => {
+      await Promise.all(projectsMocks.map(projectMock => projectsService.create(createProjectData(projectMock, { userId: authUser.id }))))
 
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}`,
         method: 'get',
-        token: await authService.createToken(user.id),
+        token: await authService.createToken(authAdmin.id),
       })
 
       expect(res.status).toBe(200)

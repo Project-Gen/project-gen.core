@@ -25,6 +25,21 @@ export class UsersService {
     return this.create({ ...data, role: Role.Admin })
   }
 
+  async updateById(id: number, { password, ...iData }) {
+    const data = { ...iData }
+    if (password) {
+      data.passwordHash = await this.createPassword(password)
+    }
+
+    await this.userRepository.update({ id }, data)
+
+    return this.findOne({ id })
+  }
+
+  async deleteById(id: number) {
+    return this.userRepository.delete({ id })
+  }
+
   async findOne(where: FindUserDto) {
     return this.userRepository.findOne(where)
   }

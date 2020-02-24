@@ -11,7 +11,9 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body) {
-    const user = await this.userService.createAdmin(body)
+    const user = await this.userService.createUser(body)
+    // INFO: for client admin registration
+    // const user = await this.userService.createAdmin(body)
     const token = await this.authService.createToken(user.id)
 
     return {

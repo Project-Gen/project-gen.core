@@ -37,6 +37,9 @@ export class AdminProjectsController {
   @Get(':id')
   @UseGuards(AuthGuard('jwt'), RoleGuard)
   @Roles(['admin'])
+  /**
+   * TODO: @ParseInt(id)
+   */
   async findById(@Param('id') id: string) {
     return {
       data: await this.projectsService.findOne({ id }),
@@ -46,6 +49,9 @@ export class AdminProjectsController {
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), RoleGuard)
   @Roles(['admin'])
+  /**
+   * TODO: @ParseInt(id)
+   */
   async deleteById(@Param('id') id: string) {
     const { affected } = await this.projectsService.deleteById(Number(id))
 
