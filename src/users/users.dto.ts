@@ -6,6 +6,12 @@ export type CreateUserDto = {
   role: Role
 }
 
+export type UpdateUserDto = {
+  email?: string
+  password?: string
+  role?: Role
+}
+
 export type FindUserDto = {
   id?: number
   email?: string

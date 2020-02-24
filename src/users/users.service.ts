@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
 import { Repository } from 'typeorm'
 import { Role, User } from './user.entity'
-import { CreateUserDto, FindUserDto } from './users.dto'
+import { CreateUserDto, FindUserDto, UpdateUserDto } from './users.dto'
 
 @Injectable()
 export class UsersService {
@@ -25,8 +25,10 @@ export class UsersService {
     return this.create({ ...data, role: Role.Admin })
   }
 
-  async updateById(id: number, { password, ...iData }) {
-    const data = { ...iData }
+  async updateById(id: number, { password, ...iData }: UpdateUserDto) {
+    type UpdateData = typeof iData & { passwordHash?: string }
+    const data: UpdateData = { ...iData }
+
     if (password) {
       data.passwordHash = await this.createPassword(password)
     }

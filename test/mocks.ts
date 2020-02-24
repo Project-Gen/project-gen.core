@@ -1,4 +1,6 @@
 import { Role } from '../src/users/user.entity'
+import { CreateUserDto } from '../src/users/users.dto'
+import { CreateProjectDto } from '../src/projects/projects.dto'
 
 /**
  * Add types
@@ -13,7 +15,7 @@ export const projectsMocks = [
     description: 'open gallery',
   },
 ]
-export const createProjectData = (data, { userId }: { userId: number }) => ({
+export const createProjectData = (data: Omit<CreateProjectDto, 'userId'>, { userId }: Pick<CreateProjectDto, 'userId'>) => ({
   ...data,
   userId,
 })
@@ -38,7 +40,7 @@ export const usersMocks = [
     password: 'tim',
   },
 ]
-export const createUserData = (data, { role }: { role: Role }) => ({
+export const createUserData = (data: Omit<CreateUserDto, 'role'>, { role }: Pick<CreateUserDto, 'role'>) => ({
   ...data,
   role,
 })

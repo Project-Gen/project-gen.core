@@ -6,7 +6,7 @@ import { AuthService } from '../src/auth/auth.service'
 import { Role } from '../src/users/user.entity'
 import { UsersService } from '../src/users/users.service'
 import { request, expectUnauhorized } from './lib'
-import { createUserData, usersMocks } from './mocks'
+import { usersMocks } from './mocks'
 
 const API_URL = '/auth'
 
