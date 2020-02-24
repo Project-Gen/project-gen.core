@@ -17,7 +17,7 @@ export class Project {
 
   @ManyToOne(
     () => User,
-    user => user.projects,
+    (user) => user.projects,
   )
   user: User
 }

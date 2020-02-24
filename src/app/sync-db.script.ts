@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core'
-import { AppModule } from './app.module'
 import { getConnection } from 'typeorm'
+import { AppModule } from './app.module'
 
 const init = async () => {
   const app = await NestFactory.create(AppModule)

@@ -232,7 +232,7 @@ describe('ProjectsController (e2e)', () => {
     test('get all projects', async () => {
       const user = await usersService.createAdmin(usersMocks[0])
 
-      await Promise.all(projectsMocks.map(projectMock => projectsService.create(createProjectData(projectMock, { userId: user.id }))))
+      await Promise.all(projectsMocks.map((projectMock) => projectsService.create(createProjectData(projectMock, { userId: user.id }))))
 
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}`,
