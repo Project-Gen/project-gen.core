@@ -1,4 +1,3 @@
-import { Role } from '../src/users/user.entity'
 import { CreateUserDto } from '../src/users/users.dto'
 import { CreateProjectDto } from '../src/projects/projects.dto'
 
@@ -9,10 +8,22 @@ export const projectsMocks = [
   {
     title: 'Create caffe',
     description: 'Create caffe',
+    vacantions: [
+      {
+        title: 'Barista',
+      },
+      { title: 'Cleaning lady' },
+    ],
   },
   {
     title: 'Open gallery',
     description: 'open gallery',
+    vacantions: [
+      {
+        title: 'Security',
+      },
+      { title: 'Cashier' },
+    ],
   },
 ]
 export const createProjectData = (data: Omit<CreateProjectDto, 'userId'>, { userId }: Pick<CreateProjectDto, 'userId'>) => ({

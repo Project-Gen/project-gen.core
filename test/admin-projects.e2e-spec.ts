@@ -67,8 +67,23 @@ describe('AdminProjectsController (e2e)', () => {
           description: projectData.description,
           userId: projectData.userId,
           user: authUser,
+          vacantions: expect.any(Array),
         },
       })
+
+      expect(res.body.data.vacantions).toHaveLength(2)
+      expect(res.body.data.vacantions).toEqual([
+        {
+          id: expect.any(Number),
+          title: projectData.vacantions[0].title,
+          projectId: res.body.data.id,
+        },
+        {
+          id: expect.any(Number),
+          title: projectData.vacantions[1].title,
+          projectId: res.body.data.id,
+        },
+      ])
     })
 
     test('forbidden by user role', async () => {
@@ -102,8 +117,22 @@ describe('AdminProjectsController (e2e)', () => {
           description: projectsMocks[0].description,
           userId: authUser.id,
           user: authUser,
+          vacantions: expect.any(Array),
         },
       })
+      expect(res.body.data.vacantions).toHaveLength(2)
+      expect(res.body.data.vacantions).toEqual([
+        {
+          id: expect.any(Number),
+          title: project.vacantions[0].title,
+          projectId: project.id,
+        },
+        {
+          id: expect.any(Number),
+          title: project.vacantions[1].title,
+          projectId: project.id,
+        },
+      ])
     })
 
     test('forbidden for user role', async () => {
@@ -129,7 +158,17 @@ describe('AdminProjectsController (e2e)', () => {
         path: `${API_URL}/${project.id}`,
         method: 'put',
         token: await authService.createToken(authAdmin.id),
-        data: newProjectData,
+        data: {
+          ...newProjectData,
+          vacantions: [
+            ...newProjectData.vacantions,
+            {
+              id: project.vacantions[0].id,
+              title: `${project.vacantions[0].title}:updated`,
+              projectId: project.id,
+            },
+          ],
+        },
       })
       expect(res.status).toBe(200)
       expect(res.body).toEqual({
@@ -137,8 +176,29 @@ describe('AdminProjectsController (e2e)', () => {
           id: project.id,
           ...newProjectData,
           user: authUser,
+          vacantions: expect.any(Array),
         },
       })
+      expect(res.body.data.vacantions).toHaveLength(3)
+      expect(res.body.data.vacantions).toEqual(
+        expect.arrayContaining([
+          {
+            id: expect.any(Number),
+            title: projectsMocks[1].vacantions[0].title,
+            projectId: project.id,
+          },
+          {
+            id: expect.any(Number),
+            title: projectsMocks[1].vacantions[1].title,
+            projectId: project.id,
+          },
+          {
+            id: project.vacantions[0].id,
+            title: `${project.vacantions[0].title}:updated`,
+            projectId: project.id,
+          },
+        ]),
+      )
     })
 
     test('forbidden by user role', async () => {
