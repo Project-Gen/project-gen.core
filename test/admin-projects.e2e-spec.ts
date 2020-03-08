@@ -49,7 +49,9 @@ describe('AdminProjectsController (e2e)', () => {
 
   describe(`${API_URL} (POST)`, () => {
     test('create project', async () => {
-      const projectData = createProjectData(projectsMocks[0], { userId: authUser.id })
+      const projectData = createProjectData(projectsMocks[0], {
+        userId: authUser.id,
+      })
       const token = await authService.createToken(authAdmin.id)
 
       const res = await request(app.getHttpServer(), {
@@ -100,7 +102,10 @@ describe('AdminProjectsController (e2e)', () => {
 
   describe(`${API_URL}/:id (GET)`, () => {
     test('return project', async () => {
-      const project = await projectsService.create({ ...projectsMocks[0], userId: authUser.id })
+      const project = await projectsService.create({
+        ...projectsMocks[0],
+        userId: authUser.id,
+      })
       const token = await authService.createToken(authAdmin.id)
 
       const res = await request(app.getHttpServer(), {
@@ -153,7 +158,9 @@ describe('AdminProjectsController (e2e)', () => {
         ...projectsMocks[0],
         userId: authUser.id,
       })
-      const newProjectData = createProjectData(projectsMocks[1], { userId: project.userId })
+      const newProjectData = createProjectData(projectsMocks[1], {
+        userId: project.userId,
+      })
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}/${project.id}`,
         method: 'put',
@@ -197,7 +204,7 @@ describe('AdminProjectsController (e2e)', () => {
             title: `${project.vacantions[0].title}:updated`,
             projectId: project.id,
           },
-        ]),
+        ])
       )
     })
 
@@ -224,7 +231,9 @@ describe('AdminProjectsController (e2e)', () => {
     })
 
     test('delete project', async () => {
-      const project = await projectsService.create(createProjectData(projectsMocks[0], { userId: authUser.id }))
+      const project = await projectsService.create(
+        createProjectData(projectsMocks[0], { userId: authUser.id })
+      )
 
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}/${project.id}`,
@@ -249,7 +258,13 @@ describe('AdminProjectsController (e2e)', () => {
     })
 
     test('return projects', async () => {
-      await Promise.all(projectsMocks.map(projectMock => projectsService.create(createProjectData(projectMock, { userId: authUser.id }))))
+      await Promise.all(
+        projectsMocks.map((projectMock) =>
+          projectsService.create(
+            createProjectData(projectMock, { userId: authUser.id })
+          )
+        )
+      )
 
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}`,

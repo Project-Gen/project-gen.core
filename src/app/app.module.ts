@@ -6,6 +6,12 @@ import { AuthModule } from '../auth/auth.module'
 import { ProjectsModule } from '../projects/projects.module'
 
 @Module({
-  imports: [ConfigModule, DatabaseModule, UsersModule, AuthModule, ProjectsModule],
+  imports: [
+    ConfigModule,
+    DatabaseModule,
+    UsersModule,
+    AuthModule,
+    ProjectsModule,
+  ],
 })
 export class AppModule {}

@@ -10,7 +10,9 @@ import { ConfigService } from '../config/config.service'
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService): PostgresConnectionOptions => ({
+      useFactory: (
+        configService: ConfigService
+      ): PostgresConnectionOptions => ({
         type: 'postgres',
         url: configService.get('pgUrl'),
         entities: [path.resolve(`${__dirname}/../**/*.entity{.ts,.js}`)],

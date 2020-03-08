@@ -26,7 +26,10 @@ export const projectsMocks = [
     ],
   },
 ]
-export const createProjectData = (data: Omit<CreateProjectDto, 'userId'>, { userId }: Pick<CreateProjectDto, 'userId'>) => ({
+export const createProjectData = (
+  data: Omit<CreateProjectDto, 'userId'>,
+  { userId }: Pick<CreateProjectDto, 'userId'>
+) => ({
   ...data,
   userId,
 })
@@ -51,7 +54,10 @@ export const usersMocks = [
     password: 'tim',
   },
 ]
-export const createUserData = (data: Omit<CreateUserDto, 'role'>, { role }: Pick<CreateUserDto, 'role'>) => ({
+export const createUserData = (
+  data: Omit<CreateUserDto, 'role'>,
+  { role }: Pick<CreateUserDto, 'role'>
+) => ({
   ...data,
   role,
 })

@@ -1,8 +1,17 @@
-import { Controller, Post, Get, Body, Param, UseGuards, Put, Delete } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { ProjectsService } from './projects.service'
-import { RoleGuard } from '../auth/roles.guard'
 import { Roles } from '../auth/role.decorator'
+import { RoleGuard } from '../auth/roles.guard'
+import { ProjectsService } from './projects.service'
 
 @Controller('/admin/projects')
 export class AdminProjectsController {
@@ -42,7 +51,7 @@ export class AdminProjectsController {
    */
   async findById(@Param('id') id: string) {
     return {
-      data: await this.projectsService.findOne({ id }),
+      data: await this.projectsService.findOne({ id: parseInt(id, 10) }),
     }
   }
 
@@ -53,7 +62,7 @@ export class AdminProjectsController {
    * TODO: @ParseInt(id)
    */
   async deleteById(@Param('id') id: string) {
-    const { affected } = await this.projectsService.deleteById(Number(id))
+    const { affected } = await this.projectsService.deleteById(parseInt(id, 10))
 
     return {
       data: { affected },

@@ -7,7 +7,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "npm run lint:fix && prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -111,13 +111,13 @@
         2,
         "never"
       ],
-      "implicit-arrow-linebreak": [
-        "error",
-        "beside"
-      ],
+      "no-unexpected-multiline": 0,
+      "implicit-arrow-linebreak": 0,
+      "function-paren-newline": 0,
       "object-curly-newline": 0,
       "no-console": 0,
       "import/prefer-default-export": 0,
+      "comma-dangle": 0,
       "max-classes-pre-file": 0,
       "max-classes-per-file": 0,
       "import/no-cycle": 0,
@@ -136,10 +136,11 @@
     }
   },
   "prettier": {
-    "printWidth": 150,
+    "printWidth": 80,
     "semi": false,
     "singleQuote": true,
-    "trailingComma": "all"
+    "trailingComma": "es5",
+    "arrowParens": "always"
   },
   "husky": {
     "hooks": {

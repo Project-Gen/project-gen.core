@@ -7,7 +7,10 @@ type RequestConfig = {
   method: 'get' | 'post' | 'put' | 'delete'
 }
 
-export const request = async (app: any, { data, token, path, method }: RequestConfig) => {
+export const request = async (
+  app: any,
+  { data, token, path, method }: RequestConfig
+) => {
   const headers: { Authorization?: string; [header: string]: string } = {}
 
   if (token) {
@@ -29,7 +32,13 @@ interface ExpectFn {
   ({ status: number, body: any }): void
 }
 
-export const expectForbidden: ExpectFn = ({ status, body }: { status: number; body: any }) => {
+export const expectForbidden: ExpectFn = ({
+  status,
+  body,
+}: {
+  status: number
+  body: any
+}) => {
   expect(status).toBe(403)
   expect(body).toEqual({
     error: 'Forbidden',
@@ -38,7 +47,13 @@ export const expectForbidden: ExpectFn = ({ status, body }: { status: number; bo
   })
 }
 
-export const expectUnauhorized: ExpectFn = ({ status, body }: { status: number; body: any }) => {
+export const expectUnauhorized: ExpectFn = ({
+  status,
+  body,
+}: {
+  status: number
+  body: any
+}) => {
   expect(status).toBe(401)
   expect(body).toEqual({
     error: 'Unauthorized',

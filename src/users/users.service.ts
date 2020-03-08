@@ -7,7 +7,9 @@ import { CreateUserDto, FindUserDto, UpdateUserDto } from './users.dto'
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>
+  ) {}
 
   async create({ password, ...data }: CreateUserDto) {
     const { id } = await this.userRepository.save({

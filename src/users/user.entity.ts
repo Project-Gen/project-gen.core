@@ -22,7 +22,7 @@ export class User {
 
   @OneToMany(
     () => Project,
-    (project) => project.user,
+    (project) => project.user
   )
   projects: Project[]
 }

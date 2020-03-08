@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  OneToMany,
+} from 'typeorm'
 import { User } from '../users/user.entity'
 import { Vacantion } from './project-vacantion.entity'
 
@@ -18,13 +24,13 @@ export class Project {
 
   @ManyToOne(
     () => User,
-    user => user.projects,
+    (user) => user.projects
   )
   user: User
 
   @OneToMany(
     () => Vacantion,
-    vacantion => vacantion.project,
+    (vacantion) => vacantion.project
   )
   vacantions: Vacantion[]
 }

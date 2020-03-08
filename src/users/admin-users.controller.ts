@@ -1,8 +1,17 @@
-import { Controller, Get, Post, UseGuards, Body, Put, Param, Delete } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { UsersService } from './users.service'
-import { RoleGuard } from '../auth/roles.guard'
 import { Roles } from '../auth/role.decorator'
+import { RoleGuard } from '../auth/roles.guard'
+import { UsersService } from './users.service'
 
 @Controller('/admin/users')
 export class AdminUsersController {

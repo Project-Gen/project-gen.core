@@ -190,7 +190,7 @@ describe('AdminUsersController (e2e)', () => {
 
     test('return users', async () => {
       const token = await authService.createToken(authAdmin.id)
-      await Promise.all(usersMocks.map(u => usersService.createUser(u)))
+      await Promise.all(usersMocks.map((u) => usersService.createUser(u)))
       const res = await request(app.getHttpServer(), {
         path: `${API_URL}`,
         method: 'get',
@@ -198,7 +198,9 @@ describe('AdminUsersController (e2e)', () => {
       })
 
       expect(res.status).toEqual(200)
-      expect(res.body.data).toHaveLength(usersMocks.length + authUsersMocks.length)
+      expect(res.body.data).toHaveLength(
+        usersMocks.length + authUsersMocks.length
+      )
       expect(res.body.count).toEqual(usersMocks.length + authUsersMocks.length)
     })
   })
